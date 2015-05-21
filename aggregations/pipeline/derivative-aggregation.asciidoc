@@ -1,7 +1,7 @@
-[[search-aggregations-reducer-derivative-aggregation]]
+[[search-aggregations-pipeline-derivative-aggregation]]
 === Derivative Aggregation
 
-A parent reducer aggregation which calculates the derivative of a specified metric in a parent histogram (or date_histogram) 
+A parent pipeline aggregation which calculates the derivative of a specified metric in a parent histogram (or date_histogram) 
 aggregation. The specified metric must be numeric and the enclosing histogram must have `min_doc_count` set to `0` (default
 for `histogram` aggregations).
 
@@ -112,8 +112,8 @@ would be $/month assuming the `price` field has units of $.
 
 ==== Second Order Derivative
 
-A second order derivative can be calculated by chaining the derivative reducer aggregation onto the result of another derivative 
-reducer aggregation as in the following example which will calculate both the first and the second order derivative of the total 
+A second order derivative can be calculated by chaining the derivative pipeline aggregation onto the result of another derivative 
+pipeline aggregation as in the following example which will calculate both the first and the second order derivative of the total 
 monthly sales:
 
 [source,js]

@@ -1,39 +1,39 @@
-[[search-aggregations-reducer]]
+[[search-aggregations-pipeline]]
 
-== Reducer Aggregations
+== Pipeline Aggregations
 
 coming[2.0.0]
 
 experimental[]
 
-Reducer aggregations work on the outputs produced from other aggregations rather than from document sets, adding
-information to the output tree. There are many different types of reducer, each computing different information from
+Pipeline aggregations work on the outputs produced from other aggregations rather than from document sets, adding
+information to the output tree. There are many different types of pipeline aggregation, each computing different information from
 other aggregations, but these types can broken down into two families:
 
 _Parent_::
-                A family of reducer aggregations that is provided with the output of its parent aggregation and is able
+                A family of pipeline aggregations that is provided with the output of its parent aggregation and is able
                 to compute new buckets or new aggregations to add to existing buckets.
 
 _Sibling_::
-                Reducer aggregations that are provided with the output of a sibling aggregation and are able to compute a
+                Pipeline aggregations that are provided with the output of a sibling aggregation and are able to compute a
                 new aggregation which will be at the same level as the sibling aggregation.
 
-Reducer aggregations can reference the aggregations they need to perform their computation by using the `buckets_paths`
+Pipeline aggregations can reference the aggregations they need to perform their computation by using the `buckets_paths`
 parameter to indicate the paths to the required metrics. The syntax for defining these paths can be found in the
 <<bucket-path-syntax, `buckets_path` Syntax>> section below.
 
-Reducer aggregations cannot have sub-aggregations but depending on the type it can reference another reducer in the `buckets_path`
-allowing reducers to be chained.  For example, you can chain together two derivatives to calculate the second derivative
+Pipeline aggregations cannot have sub-aggregations but depending on the type it can reference another pipeline in the `buckets_path`
+allowing pipeline aggregations to be chained.  For example, you can chain together two derivatives to calculate the second derivative
 (e.g. a derivative of a derivative).
 
-NOTE: Because reducer aggregations only add to the output, when chaining reducer aggregations the output of each reducer will be
-included in the final output.
+NOTE: Because pipeline aggregations only add to the output, when chaining pipeline aggregations the output of each pipeline aggregation 
+will be included in the final output.
 
 [[bucket-path-syntax]]
 [float]
 === `buckets_path` Syntax
 
-Most reducers require another aggregation as their input.  The input aggregation is defined via the `buckets_path`
+Most pipeline aggregations require another aggregation as their input.  The input aggregation is defined via the `buckets_path`
 parameter, which follows a specific format:
 
 --------------------------------------------------
@@ -47,7 +47,7 @@ PATH                :=  <AGG_NAME>[<AGG_SEPARATOR><AGG_NAME>]*[<METRIC_SEPARATOR
 For example, the path `"my_bucket>my_stats.avg"` will path to the `avg` value in the `"my_stats"` metric, which is
 contained in the `"my_bucket"` bucket aggregation.
 
-Paths are relative from the position of the reducer; they are not absolute paths, and the path cannot go back "up" the
+Paths are relative from the position of the pipeline aggregation; they are not absolute paths, and the path cannot go back "up" the
 aggregation tree. For example, this moving average is embedded inside a date_histogram and refers to a "sibling"
 metric `"the_sum"`:
 
@@ -73,7 +73,7 @@ metric `"the_sum"`:
 <1> The metric is called `"the_sum"`
 <2> The `buckets_path` refers to the metric via a relative path `"the_sum"`
 
-`buckets_path` is also used for Sibling reducer aggregations, where the aggregation is "next" to a series of buckets
+`buckets_path` is also used for Sibling pipeline aggregations, where the aggregation is "next" to a series of buckets
 instead of embedded "inside" them.  For example, the `max_bucket` aggregation uses the `buckets_path` to specify
 a metric embedded inside a sibling aggregation:
 
@@ -109,7 +109,7 @@ a metric embedded inside a sibling aggregation:
 ==== Special Paths
 
 Instead of pathing to a metric, `buckets_path` can use a special `"_count"` path.  This instructs
-the reducer to use the document count as it's input.  For example, a moving average can be calculated on the document
+the pipeline aggregation to use the document count as it's input.  For example, a moving average can be calculated on the document
 count of each bucket, instead of a specific metric:
 
 [source,js]
@@ -141,7 +141,7 @@ There are a couple of reasons why the data output by the enclosing histogram may
 on the enclosing histogram or with a query matching only a small number of documents)
 
 Where there is no data available in a bucket for a given metric it presents a problem for calculating the derivative value for both
-the current bucket and the next bucket. In the derivative reducer aggregation has a `gap policy` parameter to define what the behavior
+the current bucket and the next bucket. In the derivative pipeline aggregation has a `gap policy` parameter to define what the behavior
 should be when a gap in the data is found. There are currently two options for controlling the gap policy:
 
 _skip_::
@@ -154,9 +154,9 @@ _insert_zeros_::
 
 
 
-include::reducer/avg-bucket-aggregation.asciidoc[]
-include::reducer/derivative-aggregation.asciidoc[]
-include::reducer/max-bucket-aggregation.asciidoc[]
-include::reducer/min-bucket-aggregation.asciidoc[]
-include::reducer/sum-bucket-aggregation.asciidoc[]
-include::reducer/movavg-aggregation.asciidoc[]
+include::pipeline/avg-bucket-aggregation.asciidoc[]
+include::pipeline/derivative-aggregation.asciidoc[]
+include::pipeline/max-bucket-aggregation.asciidoc[]
+include::pipeline/min-bucket-aggregation.asciidoc[]
+include::pipeline/sum-bucket-aggregation.asciidoc[]
+include::pipeline/movavg-aggregation.asciidoc[]

@@ -1,35 +1,33 @@
-[[search-aggregations-reducer-min-bucket-aggregation]]
-=== Min Bucket Aggregation
+[[search-aggregations-pipeline-sum-bucket-aggregation]]
+=== Sum Bucket Aggregation
 
-A sibling reducer aggregation which identifies the bucket(s) with the minimum value of a specified metric in a sibling aggregation 
-and outputs both the value and the key(s) of the bucket(s). The specified metric must be numeric and the sibling aggregation must 
-be a multi-bucket aggregation.
+A sibling pipeline aggregation which calculates the sum across all bucket of a specified metric in a sibling aggregation. 
+The specified metric must be numeric and the sibling aggregation must be a multi-bucket aggregation.
 
 ==== Syntax
 
-A `max_bucket` aggregation looks like this in isolation:
+A `sum_bucket` aggregation looks like this in isolation:
 
 [source,js]
 --------------------------------------------------
 {
-    "min_bucket": {
+    "sum_bucket": {
         "buckets_path": "the_sum"
     }
 }
 --------------------------------------------------
 
-.`min_bucket` Parameters
+.`sum_bucket` Parameters
 |===
 |Parameter Name |Description |Required |Default Value
-|`buckets_path` |The path to the buckets we wish to find the minimum for (see <<bucket-path-syntax>> for more
+|`buckets_path` |The path to the buckets we wish to find the sum for (see <<bucket-path-syntax>> for more
  details) |Required |
  |`gap_policy` |The policy to apply when gaps are found in the data (see <<gap-policy>> for more
- details)|Optional, defaults to `skip` |
+ details)|Optional, defaults to `skip` ||
  |`format` |format to apply to the output value of this aggregation |Optional, defaults to `null` |
 |===
 
-
-The following snippet calculates the minimum of the total monthly `sales`:
+The following snippet calculates the sum of all the total monthly `sales` buckets:
 
 [source,js]
 --------------------------------------------------
@@ -48,16 +46,15 @@ The following snippet calculates the minimum of the total monthly `sales`:
                 }
             }
         },
-        "min_monthly_sales": {
-            "min_bucket": {
+        "sum_monthly_sales": {
+            "sum_bucket": {
                 "buckets_paths": "sales_per_month>sales" <1>
             }
         }
     }
 }
 --------------------------------------------------
-
-<1> `bucket_paths` instructs this max_bucket aggregation that we want the minimum value of the `sales` aggregation in the 
+<1> `bucket_paths` instructs this sum_bucket aggregation that we want the sum of the `sales` aggregation in the 
 `sales_per_month` date histogram.
 
 And the following may be the response:
@@ -94,13 +91,10 @@ And the following may be the response:
             }
          ]
       },
-      "min_monthly_sales": {
-          "keys": ["2015/02/01 00:00:00"], <1>
-          "value": 60
+      "sum_monthly_sales": {
+          "value": 985
       }
    }
 }
 --------------------------------------------------
-
-<1> `keys` is an array of strings since the minimum value may be present in multiple buckets
 
