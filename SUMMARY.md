@@ -1,6 +1,6 @@
 # Summary
 
-* \[how-to\]\(how-to.asciidoc\)
+* [how-to](how-to.asciidoc)
 
 
 
